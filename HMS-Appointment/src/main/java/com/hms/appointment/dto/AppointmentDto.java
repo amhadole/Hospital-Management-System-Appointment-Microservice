@@ -17,11 +17,11 @@ public class AppointmentDto {
 	private Long doctorId;
 	private LocalDateTime appointmentTime;
 	private Status status;
-	private String reasone;
+	private String reason;
 	private String note;
 	
 	public AppointmentEntity toEntity() {
-		return new AppointmentEntity(this.id, this.patientId, this.doctorId, this.appointmentTime, this.status, this.reasone, this.note);
+		return new AppointmentEntity(this.id, this.patientId, this.doctorId, this.appointmentTime, this.status, this.reason, this.note);
 	}
 	
 }

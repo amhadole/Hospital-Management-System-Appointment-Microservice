@@ -6,6 +6,8 @@ import com.hms.appointment.dto.AppointmentDto;
 import com.hms.appointment.dto.Status;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,12 +26,13 @@ public class AppointmentEntity {
 	private Long patientId;
 	private Long doctorId;
 	private LocalDateTime appointmentTime;
+	@Enumerated(EnumType.STRING)
 	private Status status;
-	private String reasone;
+	private String reason;
 	private String note;
 	
 	public AppointmentDto toDto() {
-		return new AppointmentDto(this.id, this.patientId, this.doctorId, this.appointmentTime, this.status, this.reasone, this.note);
+		return new AppointmentDto(this.id, this.patientId, this.doctorId, this.appointmentTime, this.status, this.reason, this.note);
 	}
 	
 }

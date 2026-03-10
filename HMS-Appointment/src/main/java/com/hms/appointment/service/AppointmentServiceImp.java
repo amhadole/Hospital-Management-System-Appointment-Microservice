@@ -18,12 +18,13 @@ public class AppointmentServiceImp implements AppointmentService {
 
 	@Override
 	public Long scheduleAppointment(AppointmentDto appointmentDto) {
+		appointmentDto.setStatus(Status.SCHEDULED);
 		return appointmentRepository.save(appointmentDto.toEntity()).getId();
 
 	}
 
 	@Override
-	public void cancelAppointment(Long appointmentId) throws HmsException {
+	public String cancelAppointment(Long appointmentId) throws HmsException {
 		AppointmentEntity appointmentEntity = appointmentRepository.findById(appointmentId)
 				.orElseThrow(() -> new HmsException("APPOINTMENT_NOT_FOUND"));
 		if (appointmentEntity.getStatus().equals(Status.CANCELLED)) {
@@ -31,6 +32,7 @@ public class AppointmentServiceImp implements AppointmentService {
 		}
 		appointmentEntity.setStatus(Status.CANCELLED);
 		appointmentRepository.save(appointmentEntity);
+		return "Appointment Cancelled";
 
 	}
 

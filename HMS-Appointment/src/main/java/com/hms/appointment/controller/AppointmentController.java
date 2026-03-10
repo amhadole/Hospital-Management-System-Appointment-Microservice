@@ -1,5 +1,7 @@
 package com.hms.appointment.controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hms.appointment.dto.ApiResponse;
 import com.hms.appointment.dto.AppointmentDto;
 import com.hms.appointment.exception.HmsException;
 import com.hms.appointment.service.AppointmentService;
@@ -28,18 +31,23 @@ public class AppointmentController {
 	}
 
 	@PostMapping("/schedule")
-	public ResponseEntity<Long> scheduleAppointment(@RequestBody AppointmentDto appointmentDto) {
-		return new ResponseEntity<Long>(appointmentService.scheduleAppointment(appointmentDto), HttpStatus.CREATED);
+	public ResponseEntity<ApiResponse<Long>> scheduleAppointment(@RequestBody AppointmentDto appointmentDto) {
+		Long appointmentId = appointmentService.scheduleAppointment(appointmentDto);
+		ApiResponse<Long> response = new ApiResponse<Long>(HttpStatus.CREATED.value(), "Appointment Schedule", appointmentId, LocalDateTime.now());
+		return new ResponseEntity<ApiResponse<Long>>(response, HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/cancel/{appointmentId}")
-	public ResponseEntity<String> cancelAppointment(@PathVariable Long appointmentId)throws HmsException{
-		appointmentService.cancelAppointment(appointmentId);
-		return new ResponseEntity<String>("Appointment Cancelled", HttpStatus.OK);	
+	public ResponseEntity<ApiResponse<String>> cancelAppointment(@PathVariable Long appointmentId)throws HmsException{
+		String cancelAppointment = appointmentService.cancelAppointment(appointmentId);
+		ApiResponse<String> response = new ApiResponse<String>(HttpStatus.OK.value(),"Appointment Cancelled" , cancelAppointment, LocalDateTime.now());
+		return new ResponseEntity<ApiResponse<String>>(response, HttpStatus.OK);
 	}
 	
-	@GetMapping("/get/{appointmentId}")
-	public ResponseEntity<AppointmentDto> getAppointmentDetails(@PathVariable Long appointmentId){
-		return new ResponseEntity<AppointmentDto>(appointmentService.getAppointmentDetail(appointmentId), HttpStatus.OK);
+	@GetMapping("/getDetail/{appointmentId}")
+	public ResponseEntity<ApiResponse<AppointmentDto>> getAppointmentDetails(@PathVariable Long appointmentId){
+		AppointmentDto appointmentDetail = appointmentService.getAppointmentDetail(appointmentId);
+		ApiResponse<AppointmentDto> response = new ApiResponse<AppointmentDto>(HttpStatus.OK.value(), "Appointment Details", appointmentDetail, LocalDateTime.now());
+		return new ResponseEntity<ApiResponse<AppointmentDto>>(response, HttpStatus.OK);
 	}
 }
