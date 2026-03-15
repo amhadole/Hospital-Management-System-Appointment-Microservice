@@ -1,5 +1,7 @@
 package com.hms.appointment.service;
 
+import java.time.LocalTime;
+
 import org.springframework.stereotype.Service;
 
 import com.hms.appointment.dto.AppointmentDetailDto;
@@ -16,7 +18,6 @@ import com.hms.appointment.repository.AppointmentRepository;
 public class AppointmentServiceImp implements AppointmentService {
 	private final AppointmentRepository appointmentRepository;
 	private final ProfileClient profileClient;
-	
 
 	public AppointmentServiceImp(AppointmentRepository appointmentRepository, ProfileClient profileClient) {
 		this.appointmentRepository = appointmentRepository;
@@ -33,6 +34,30 @@ public class AppointmentServiceImp implements AppointmentService {
 		if (patientExists == null || !patientExists) {
 			throw new HmsException("PATIENT_NOT_FOUND");
 		}
+		DoctorDto doctor = profileClient.getDoctorById(appointmentDto.getDoctorId()).getData();
+		System.out.println(doctor.getBreakStart());
+		System.out.println(doctor.getBreakEnd());
+		LocalTime appointmentTime = appointmentDto.getAppointmentTime().toLocalTime();
+
+		// Checking working hours of doctor
+		if (appointmentTime.isBefore(doctor.getWorkStart())
+		        || !appointmentTime.isBefore(doctor.getWorkEnd())) {
+		    throw new HmsException("DOCTOR_NOT_AVAILABLE");
+		}
+
+		// Checking break time of doctor
+		if (!appointmentTime.isBefore(doctor.getBreakStart())
+		        && appointmentTime.isBefore(doctor.getBreakEnd())) {
+		    throw new HmsException("DOCTOR_ON_BREAK");
+		}
+
+		boolean slotBooked = appointmentRepository.existsByDoctorIdAndAppointmentTime(appointmentDto.getDoctorId(),
+				appointmentDto.getAppointmentTime());
+
+		if (slotBooked) {
+			throw new HmsException("SLOT_ALREADY_BOOKED");
+		}
+
 		appointmentDto.setStatus(Status.SCHEDULED);
 		return appointmentRepository.save(appointmentDto.toEntity()).getId();
 
