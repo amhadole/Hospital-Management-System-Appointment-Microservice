@@ -1,6 +1,9 @@
 package com.hms.appointment.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -96,6 +99,24 @@ public class AppointmentServiceImp implements AppointmentService {
 		PatientDto patientDto = profileClient.getPatientById(dto.getPatientId()).getData();
 		return new AppointmentDetailDto(dto.getId(), dto.getPatientId(), patientDto.getName(), dto.getDoctorId(),
 				doctorDto.getName(), dto.getAppointmentTime(), dto.getStatus(), dto.getReason(), dto.getNote());
+	}
+
+	@Override
+	public List<LocalTime> getAvailableSlots(Long doctorId, LocalDate date) throws HmsException {
+		 DoctorDto doctor =  profileClient.getDoctorById(doctorId).getData();
+		 LocalTime start = doctor.getWorkStart();
+		 LocalTime end = doctor.getWorkEnd();
+		 int duration  = doctor.getSlotDuration();
+		 
+		 List<LocalTime> slots = new ArrayList<>();
+		 while(start.isBefore(end)) {
+			 boolean isInBreak = !start.isBefore(doctor.getBreakStart())&& start.isBefore(doctor.getBreakEnd());
+			 if(!isInBreak) {
+				 slots.add(start);
+			 }
+			 start = start.plusMinutes(duration);
+		 }
+		return slots;
 	}
 
 }

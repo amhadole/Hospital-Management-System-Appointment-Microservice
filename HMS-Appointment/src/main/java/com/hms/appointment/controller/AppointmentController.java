@@ -1,6 +1,9 @@
 package com.hms.appointment.controller;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hms.appointment.dto.ApiResponse;
@@ -57,5 +61,14 @@ public class AppointmentController {
 		AppointmentDetailDto appointmentDetailWithName = appointmentService.getAppointmentDetailWithName(appointmentId);
 		ApiResponse<AppointmentDetailDto> response = new ApiResponse<AppointmentDetailDto>(HttpStatus.OK.value(), "Fetched Appointment Details With Name", appointmentDetailWithName, LocalDateTime.now());
 		return new ResponseEntity<ApiResponse<AppointmentDetailDto>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/availableSlots/{doctorId}")
+	public ResponseEntity<ApiResponse<List<LocalTime>>> getAvailableSlots(@PathVariable Long doctorId, @RequestParam String date){
+		List<LocalTime> slots = appointmentService.getAvailableSlots(doctorId, LocalDate.parse(date));
+		
+		ApiResponse<List<LocalTime>> response = new ApiResponse<List<LocalTime>>(HttpStatus.OK.value(), "Available Slots", slots, LocalDateTime.now());
+		
+		return new ResponseEntity<ApiResponse<List<LocalTime>>>(response, HttpStatus.OK);
 	}
 }
