@@ -119,4 +119,15 @@ public class AppointmentServiceImp implements AppointmentService {
 		return slots;
 	}
 
+	@Override
+	public List<AppointmentDetailDto> getAllAppointmentByPatientId(Long patientId) throws HmsException {
+		
+		return appointmentRepository.findAllByPatientId(patientId).stream()
+				.map(appointment ->{
+					DoctorDto doctorDto = profileClient.getDoctorById(appointment.getDoctorId()).getData();
+					appointment.setDoctorName(doctorDto.getName());
+					return appointment;
+				}).toList();
+	}
+
 }

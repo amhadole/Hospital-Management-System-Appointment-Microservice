@@ -71,4 +71,12 @@ public class AppointmentController {
 		
 		return new ResponseEntity<ApiResponse<List<LocalTime>>>(response, HttpStatus.OK);
 	}
+	
+	
+	@GetMapping("/getAllByPatient/{patientId}")
+	public ResponseEntity<ApiResponse<List<AppointmentDetailDto>>> getAllAppointmentByPatientId(@PathVariable Long patientId){
+		List<AppointmentDetailDto> allAppointmentByPatientId = appointmentService.getAllAppointmentByPatientId(patientId);
+		ApiResponse<List<AppointmentDetailDto>> response = new ApiResponse<List<AppointmentDetailDto>>(HttpStatus.OK.value(), "All Appointment Fetch", allAppointmentByPatientId, LocalDateTime.now());
+		return new ResponseEntity<ApiResponse<List<AppointmentDetailDto>>>(response, HttpStatus.OK);
+	}
 }

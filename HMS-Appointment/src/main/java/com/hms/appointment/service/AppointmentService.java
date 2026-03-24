@@ -15,4 +15,5 @@ public interface AppointmentService {
 	public AppointmentDto getAppointmentDetail(Long appointmentId)throws HmsException;
 	public abstract AppointmentDetailDto getAppointmentDetailWithName(Long appoinmtentId)throws HmsException;
 	public abstract List<LocalTime> getAvailableSlots(Long doctorId, LocalDate date)throws HmsException;
+	List<AppointmentDetailDto> getAllAppointmentByPatientId(Long patientId) throws HmsException;
 }
