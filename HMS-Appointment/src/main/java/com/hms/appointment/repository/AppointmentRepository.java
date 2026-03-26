@@ -15,10 +15,10 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
 
 	boolean existsByDoctorIdAndAppointmentTime(Long doctorId, LocalDateTime appointmentTime);
 
-	@Query("Select new com.hms.appointment.dto.AppointmentDetailDto(a.id, a.patientId, null, a.doctorId, null, a.appointmentTime, a.status, a.reason, a.note) From AppointmentEntity a Where a.patientId =?1")
+	@Query("Select new com.hms.appointment.dto.AppointmentDetailDto(a.id, a.patientId, null, null, null, a.doctorId, null, a.appointmentTime, a.status, a.reason, a.note) From AppointmentEntity a Where a.patientId =?1")
 	List<AppointmentDetailDto> findAllByPatientId(Long patientId);
-	
-	@Query("Select new com.hms.appointment.dto.AppointmentDetailDto(a.id, a.patientId, null, a.doctorId, null, a.appointmentTime, a.status, a.reason, a.note) From AppointmentEntity a Where a.doctorId =?1")
+
+	@Query("Select new com.hms.appointment.dto.AppointmentDetailDto(a.id, a.patientId, null, null, null, a.doctorId, null, a.appointmentTime, a.status, a.reason, a.note) From AppointmentEntity a Where a.doctorId =?1")
 	List<AppointmentDetailDto> findAllByDoctorId(Long doctorId);
-	
+
 }

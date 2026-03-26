@@ -95,8 +95,9 @@ public class AppointmentServiceImp implements AppointmentService {
 				.orElseThrow(() -> new HmsException("APPOINTMENT_NOT_FOUND")).toDto();
 		DoctorDto doctorDto = profileClient.getDoctorById(dto.getDoctorId()).getData();
 		PatientDto patientDto = profileClient.getPatientById(dto.getPatientId()).getData();
-		return new AppointmentDetailDto(dto.getId(), dto.getPatientId(), patientDto.getName(), dto.getDoctorId(),
-				doctorDto.getName(), dto.getAppointmentTime(), dto.getStatus(), dto.getReason(), dto.getNote());
+		return new AppointmentDetailDto(dto.getId(), dto.getPatientId(), patientDto.getName(), patientDto.getEmail(),
+				patientDto.getPhone(), dto.getDoctorId(), doctorDto.getName(), dto.getAppointmentTime(),
+				dto.getStatus(), dto.getReason(), dto.getNote());
 	}
 
 	@Override
