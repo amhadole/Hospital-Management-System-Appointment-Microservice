@@ -35,5 +35,8 @@ public class AppointmentEntity {
 		return new AppointmentDto(this.id, this.patientId, this.doctorId, this.appointmentTime, this.status, this.reason, this.note);
 	}
 	
+	public AppointmentEntity(Long id) {
+		this.id = id;
+	}
 }
 	

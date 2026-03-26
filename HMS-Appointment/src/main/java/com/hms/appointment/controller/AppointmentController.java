@@ -76,7 +76,14 @@ public class AppointmentController {
 	@GetMapping("/getAllByPatient/{patientId}")
 	public ResponseEntity<ApiResponse<List<AppointmentDetailDto>>> getAllAppointmentByPatientId(@PathVariable Long patientId){
 		List<AppointmentDetailDto> allAppointmentByPatientId = appointmentService.getAllAppointmentByPatientId(patientId);
-		ApiResponse<List<AppointmentDetailDto>> response = new ApiResponse<List<AppointmentDetailDto>>(HttpStatus.OK.value(), "All Appointment Fetch", allAppointmentByPatientId, LocalDateTime.now());
+		ApiResponse<List<AppointmentDetailDto>> response = new ApiResponse<List<AppointmentDetailDto>>(HttpStatus.OK.value(), "All Patient Appointment Fetch", allAppointmentByPatientId, LocalDateTime.now());
+		return new ResponseEntity<ApiResponse<List<AppointmentDetailDto>>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/getAllByDoctor/{doctorId}")
+	public ResponseEntity<ApiResponse<List<AppointmentDetailDto>>> getAllAppointmentByDoctorId(@PathVariable Long doctorId){
+		List<AppointmentDetailDto> allAppointmentByDoctorId = appointmentService.getAllAppointmentByDoctorId(doctorId);
+		ApiResponse<List<AppointmentDetailDto>> response = new ApiResponse<List<AppointmentDetailDto>>(HttpStatus.OK.value(), "All Doctor Appointment Fetch", allAppointmentByDoctorId, LocalDateTime.now());
 		return new ResponseEntity<ApiResponse<List<AppointmentDetailDto>>>(response, HttpStatus.OK);
 	}
 }

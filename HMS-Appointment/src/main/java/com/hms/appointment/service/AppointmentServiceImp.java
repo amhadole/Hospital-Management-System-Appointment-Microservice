@@ -43,15 +43,13 @@ public class AppointmentServiceImp implements AppointmentService {
 		LocalTime appointmentTime = appointmentDto.getAppointmentTime().toLocalTime();
 
 		// Checking working hours of doctor
-		if (appointmentTime.isBefore(doctor.getWorkStart())
-		        || !appointmentTime.isBefore(doctor.getWorkEnd())) {
-		    throw new HmsException("DOCTOR_NOT_AVAILABLE");
+		if (appointmentTime.isBefore(doctor.getWorkStart()) || !appointmentTime.isBefore(doctor.getWorkEnd())) {
+			throw new HmsException("DOCTOR_NOT_AVAILABLE");
 		}
 
 		// Checking break time of doctor
-		if (!appointmentTime.isBefore(doctor.getBreakStart())
-		        && appointmentTime.isBefore(doctor.getBreakEnd())) {
-		    throw new HmsException("DOCTOR_ON_BREAK");
+		if (!appointmentTime.isBefore(doctor.getBreakStart()) && appointmentTime.isBefore(doctor.getBreakEnd())) {
+			throw new HmsException("DOCTOR_ON_BREAK");
 		}
 
 		boolean slotBooked = appointmentRepository.existsByDoctorIdAndAppointmentTime(appointmentDto.getDoctorId(),
@@ -103,31 +101,39 @@ public class AppointmentServiceImp implements AppointmentService {
 
 	@Override
 	public List<LocalTime> getAvailableSlots(Long doctorId, LocalDate date) throws HmsException {
-		 DoctorDto doctor =  profileClient.getDoctorById(doctorId).getData();
-		 LocalTime start = doctor.getWorkStart();
-		 LocalTime end = doctor.getWorkEnd();
-		 int duration  = doctor.getSlotDuration();
-		 
-		 List<LocalTime> slots = new ArrayList<>();
-		 while(start.isBefore(end)) {
-			 boolean isInBreak = !start.isBefore(doctor.getBreakStart())&& start.isBefore(doctor.getBreakEnd());
-			 if(!isInBreak) {
-				 slots.add(start);
-			 }
-			 start = start.plusMinutes(duration);
-		 }
+		DoctorDto doctor = profileClient.getDoctorById(doctorId).getData();
+		LocalTime start = doctor.getWorkStart();
+		LocalTime end = doctor.getWorkEnd();
+		int duration = doctor.getSlotDuration();
+
+		List<LocalTime> slots = new ArrayList<>();
+		while (start.isBefore(end)) {
+			boolean isInBreak = !start.isBefore(doctor.getBreakStart()) && start.isBefore(doctor.getBreakEnd());
+			if (!isInBreak) {
+				slots.add(start);
+			}
+			start = start.plusMinutes(duration);
+		}
 		return slots;
 	}
 
 	@Override
 	public List<AppointmentDetailDto> getAllAppointmentByPatientId(Long patientId) throws HmsException {
-		
-		return appointmentRepository.findAllByPatientId(patientId).stream()
-				.map(appointment ->{
-					DoctorDto doctorDto = profileClient.getDoctorById(appointment.getDoctorId()).getData();
-					appointment.setDoctorName(doctorDto.getName());
-					return appointment;
-				}).toList();
+
+		return appointmentRepository.findAllByPatientId(patientId).stream().map(appointment -> {
+			DoctorDto doctorDto = profileClient.getDoctorById(appointment.getDoctorId()).getData();
+			appointment.setDoctorName(doctorDto.getName());
+			return appointment;
+		}).toList();
+	}
+
+	@Override
+	public List<AppointmentDetailDto> getAllAppointmentByDoctorId(Long doctorId) throws HmsException {
+		return appointmentRepository.findAllByDoctorId(doctorId).stream().map(appointment -> {
+			PatientDto patientDto = profileClient.getPatientById(appointment.getPatientId()).getData();
+			appointment.setPatientName(patientDto.getName());
+			return appointment;
+		}).toList();
 	}
 
 }
