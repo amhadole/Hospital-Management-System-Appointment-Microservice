@@ -1,6 +1,7 @@
 package com.hms.appointment.controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hms.appointment.dto.ApiResponse;
 import com.hms.appointment.dto.AppointmentRecordDto;
+import com.hms.appointment.dto.PrescriptionDetailsDto;
+import com.hms.appointment.dto.RecordDetailDto;
 import com.hms.appointment.exception.HmsException;
 import com.hms.appointment.service.AppointmentRecordService;
+import com.hms.appointment.service.PrescriptionService;
 
 @RestController
 @CrossOrigin
@@ -25,9 +29,11 @@ import com.hms.appointment.service.AppointmentRecordService;
 @RequestMapping("/appointment/report")
 public class AppointmentRecordController {
 	private final AppointmentRecordService appointmentRecordService;
+	private final PrescriptionService prescriptionService;
 
-	public AppointmentRecordController(AppointmentRecordService appointmentRecordService) {
+	public AppointmentRecordController(AppointmentRecordService appointmentRecordService, PrescriptionService prescriptionService) {
 		this.appointmentRecordService = appointmentRecordService;
+		this.prescriptionService = prescriptionService;
 	}
 
 	@PostMapping(path = "/createrecord")
@@ -75,5 +81,26 @@ public class AppointmentRecordController {
 		ApiResponse<AppointmentRecordDto> response = new ApiResponse<AppointmentRecordDto>(HttpStatus.OK.value(),
 				"Fetch Appointment Records By Appointment Id", appointmentRecordByAppointmentId, LocalDateTime.now());
 		return new ResponseEntity<ApiResponse<AppointmentRecordDto>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/getRecordsByPatientId/{patientId}")
+	public ResponseEntity<ApiResponse<List<RecordDetailDto>>> getRecordsByPatientId(@PathVariable Long patientId)throws HmsException{
+		List<RecordDetailDto> appointmentRecordByPatientId = appointmentRecordService.getAppointmentRecordByPatientId(patientId);
+		ApiResponse<List<RecordDetailDto>> response = new ApiResponse<List<RecordDetailDto>>(HttpStatus.OK.value(), "Fetch Report", appointmentRecordByPatientId, LocalDateTime.now());
+		return new ResponseEntity<ApiResponse<List<RecordDetailDto>>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/isRecordExists/{appointmentId}")
+	public ResponseEntity<ApiResponse<Boolean>> isRecordExists(@PathVariable Long appointmentId)throws HmsException{
+		Boolean recordExists = appointmentRecordService.isRecordExists(appointmentId);
+		ApiResponse<Boolean> response = new ApiResponse<Boolean>(HttpStatus.OK.value(), "Checked if Record Exists", recordExists, LocalDateTime.now());
+		return new ResponseEntity<ApiResponse<Boolean>>(response,HttpStatus.OK);
+	}
+	
+	@GetMapping("/getPrescriptionsByPatientId/{patientId}")
+	public ResponseEntity<ApiResponse<List<PrescriptionDetailsDto>>> getPrescriptionByPatientId(@PathVariable Long patientId)throws HmsException {
+		List<PrescriptionDetailsDto> prescriptionByPatientId = prescriptionService.getPrescriptionByPatientId(patientId);
+		ApiResponse<List<PrescriptionDetailsDto>> response = new ApiResponse<List<PrescriptionDetailsDto>>(HttpStatus.OK.value(), "Fetch Prescription By Patient Id", prescriptionByPatientId, LocalDateTime.now());
+		return new ResponseEntity<ApiResponse<List<PrescriptionDetailsDto>>>(response, HttpStatus.OK);
 	}
 }
